@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.Calendar;
 
-import org.hibernate.internal.util.compare.CalendarComparator;
 import org.junit.Test;
 
 import data.entities.Token;
