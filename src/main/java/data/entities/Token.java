@@ -29,8 +29,11 @@ public class Token {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Calendar createTime;
+    
+    //1 hour
+    private final int TIMEEXPIRE = 3600000;
 
-    public Token() {
+	public Token() {
     }
 
     public Token(User user) {
@@ -41,7 +44,7 @@ public class Token {
         this.createTime = Calendar.getInstance();
     }
 
-    public int getId() {
+	public int getId() {
         return id;
     }
 
@@ -52,6 +55,25 @@ public class Token {
     public User getUser() {
         return user;
     }
+    
+    public Calendar getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Calendar createTime) {
+		this.createTime = createTime;
+	}
+	
+	public boolean isValid() {
+		if ((Calendar.getInstance().getTimeInMillis() - this.createTime.getTimeInMillis()) <= TIMEEXPIRE)
+			return true;
+		else
+			return false;
+	}
+	
+	public int getTIMEEXPIRE() {
+		return TIMEEXPIRE;
+	}
 
     @Override
     public int hashCode() {
@@ -74,6 +96,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token [id=" + id + ", value=" + value + ", userId=" + user.getId() + "]";
+        return "Token [id=" + id + ", value=" + value + ", userId=" + user.getId() + ", createTime=" + createTime + "]";
     }
 }
