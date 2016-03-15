@@ -31,5 +31,14 @@ public class TokenDaoITest {
         assertEquals(token, tokenDao.findByUser(token.getUser()));
         assertNull(tokenDao.findByUser(user));
     }
+    
+    @Test
+   	public void testDeleteIsNotValidToken() {
+    	int numberTokenBefore = tokenDao.findAll().size();
+    	assertEquals(numberTokenBefore, 8);
+    	tokenDao.deleteIsNotValidToken();
+    	int numberTokenAfter = tokenDao.findAll().size();
+    	assertEquals(numberTokenAfter, 4);
+    }
 
 }
