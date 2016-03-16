@@ -16,6 +16,7 @@ import data.entities.Court;
 import data.entities.Reserve;
 import data.entities.Role;
 import data.entities.Token;
+import data.entities.Training;
 import data.entities.User;
 import data.services.DataService;
 
@@ -36,6 +37,9 @@ public class DaosService {
 
     @Autowired
     private ReserveDao reserveDao;
+    
+    @Autowired
+    private TrainingDao trainingDao;
 
     @Autowired
     private DataService genericService;
@@ -62,10 +66,20 @@ public class DaosService {
         date.set(Calendar.MINUTE, 0);
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
+        Calendar dateFinish = Calendar.getInstance();
+        dateFinish.add(Calendar.DAY_OF_YEAR, 1);
+        dateFinish.set(Calendar.HOUR_OF_DAY, 10);
+        dateFinish.set(Calendar.MINUTE, 0);
+        dateFinish.set(Calendar.SECOND, 0);
+        dateFinish.set(Calendar.MILLISECOND, 0);
+        dateFinish.add(Calendar.DAY_OF_MONTH, 7);
         for (int i = 0; i < 4; i++) {
-            date.add(Calendar.HOUR_OF_DAY, 1);
+        	date.add(Calendar.HOUR_OF_DAY, 1);
             reserveDao.save(new Reserve(courtDao.findOne(i+1), users[i], date));
+            dateFinish.add(Calendar.HOUR_OF_DAY, 1);
+            trainingDao.save(new Training(date, dateFinish, courtDao.findOne(i+1),users[i]));
         }
+        
         
         //Create users with token not valid
         users = this.createPlayers(8, 4);

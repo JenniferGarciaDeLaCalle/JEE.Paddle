@@ -1,13 +1,18 @@
 package data.entities;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+@Entity
 public class Training {
 
 	@Id
@@ -26,19 +31,19 @@ public class Training {
 	@JoinColumn
 	private User trainer;
 	
-	@ManyToOne
+	@ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn
     private List<User> players;
-	
-	//1 hour
-    private final int TIMECLASS = 3600000;
 
-	public Training( Calendar startDate, Court court, User trainer) {
+	public Training() {
+	}
+	
+	public Training( Calendar startDate, Calendar finishDate, Court court, User trainer) {
 		this.startDate = startDate;
-		this.finishDate = startDate;
-		finishDate.add(Calendar.MILLISECOND, TIMECLASS);
+		this.finishDate = finishDate;
 		this.court = court;	
 		this.trainer = trainer;
+		this.players = new ArrayList<User>(4);
 	}
 
 	public int getId() {
@@ -67,10 +72,6 @@ public class Training {
 
 	public List<User> getPlayers() {
 		return players;
-	}
-
-	public void setPlayers(List<User> players) {
-		this.players = players;
 	}
 
 	@Override
