@@ -3,9 +3,13 @@ package data.daos;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,13 +17,106 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import config.PersistenceConfig;
 import config.TestsPersistenceConfig;
 import data.entities.Training;
+import data.entities.User;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PersistenceConfig.class, TestsPersistenceConfig.class})
 public class TrainingDaoITest {
 
 	@Autowired
 	private TrainingDao trainingDao;
+	
+	@Autowired
+	private CourtDao courtDao;
+	
+	@Autowired
+	private UserDao userDao;
+	
+	@Autowired
+	private ReserveDao reserveDao;
+
+	@Test
+	public void t1_testFindTrainingsByStartDateNotFind(){
+		Calendar date = createDate();
+		assertEquals(0, trainingDao.findTrainingsByStartDate(date).size());
+	}
+	
+	@Test
+	public void t2_testFindTrainingsByStartDateFind(){
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 1);
+		assertEquals(1, trainingDao.findTrainingsByStartDate(date).size());
+		assertEquals(6, reserveDao.findAll().size());
+	}
+	
+	@Test
+	public void t3_createTraining() {
+		Calendar startDate = createDate();
+		startDate.add(Calendar.DAY_OF_YEAR, 3);
+		Calendar finishDate = createDate();
+		finishDate.add(Calendar.DAY_OF_YEAR, 17);
+		finishDate.add(Calendar.HOUR_OF_DAY, 1);
+		assertEquals(1, trainingDao.findAll().size());
+		assertEquals(6, reserveDao.findAll().size());
+		trainingDao.createTraining(startDate, finishDate, courtDao.findOne(1), userDao.findOne(1));
+		assertEquals(2, trainingDao.findAll().size());
+		assertEquals(9, reserveDao.findAll().size());
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+		assertEquals(1, trainingDao.findTrainingsByStartDate(date).size());
+	}
+	
+	
+	@Test
+	public void t4_addUserTraining() {
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
+		assertEquals(0, training.getPlayers().size());
+		trainingDao.addUserInTraining(userDao.findOne(2), training);
+		assertEquals(1, training.getPlayers().size());
+	}
+	
+	@Test
+	public void t5_addUserMoreFourTraining() {
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
+		assertEquals(1, training.getPlayers().size());
+		boolean isValid = trainingDao.addUserInTraining(userDao.findOne(3), training);
+		assertEquals(true, isValid);
+		isValid = trainingDao.addUserInTraining(userDao.findOne(3), training);
+		assertEquals(false, isValid);
+		isValid = trainingDao.addUserInTraining(userDao.findOne(4), training);
+		assertEquals(true, isValid);
+		isValid = trainingDao.addUserInTraining(userDao.findOne(5), training);
+		assertEquals(true, isValid);
+		isValid = trainingDao.addUserInTraining(userDao.findOne(6), training);
+		assertEquals(false, isValid);
+		assertEquals(4, training.getPlayers().size());
+	}
+	
+	@Test
+	public void t6_deleteUserTraining() {
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
+		assertEquals(4, training.getPlayers().size());
+		trainingDao.deleteUserInTraining(userDao.findOne(3), training);
+		trainingDao.deleteUserInTraining(userDao.findOne(4), training);
+		assertEquals(2, training.getPlayers().size());
+	}
+
+	@Test
+	public void t7_testDeleteTraining() {
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
+		assertEquals(2, trainingDao.findAll().size());
+		trainingDao.deleteTraining(training);
+		assertEquals(1, trainingDao.findAll().size());
+	}
 	
 	private Calendar createDate(){
 		Calendar date = Calendar.getInstance();
@@ -29,30 +126,5 @@ public class TrainingDaoITest {
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
         return date;
-	}
-
-	@Test
-	public void testFindTrainingsByStartDateNotFind(){
-		Calendar date = createDate();
-		assertEquals(0, trainingDao.findTrainingsByStartDate(date).size());
-	}
-	
-	@Test
-	public void testFindTrainingsByStartDateFind(){
-		Calendar date = createDate();
-		date.set(Calendar.HOUR_OF_DAY, 10);
-		assertEquals(1,  trainingDao.findTrainingsByStartDate(date).size());
-		date.add(Calendar.HOUR_OF_DAY, 1);
-		assertEquals(1,  trainingDao.findTrainingsByStartDate(date).size());
-		date.add(Calendar.HOUR_OF_DAY, 1);
-		assertEquals(1,  trainingDao.findTrainingsByStartDate(date).size());
-	}
-	
-	@Test
-	public void testDeleteTraining() {
-		assertEquals(4, trainingDao.findAll().size());
-		Training training = trainingDao.findAll().get(3);
-		trainingDao.deleteTraining(training);
-		assertEquals(3, trainingDao.findAll().size());
 	}
 }
