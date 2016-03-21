@@ -16,7 +16,6 @@ import data.entities.Court;
 import data.entities.Reserve;
 import data.entities.Role;
 import data.entities.Token;
-import data.entities.Training;
 import data.entities.User;
 import data.services.DataService;
 

@@ -3,8 +3,6 @@ package data.daos;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import config.PersistenceConfig;
 import config.TestsPersistenceConfig;
 import data.entities.Training;
-import data.entities.User;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -32,9 +29,6 @@ public class TrainingDaoITest {
 	
 	@Autowired
 	private UserDao userDao;
-	
-	@Autowired
-	private ReserveDao reserveDao;
 
 	@Test
 	public void t1_testFindTrainingsByStartDateNotFind(){
@@ -47,7 +41,6 @@ public class TrainingDaoITest {
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 1);
 		assertEquals(1, trainingDao.findTrainingsByStartDate(date).size());
-		assertEquals(6, reserveDao.findAll().size());
 	}
 	
 	@Test
@@ -58,10 +51,8 @@ public class TrainingDaoITest {
 		finishDate.add(Calendar.DAY_OF_YEAR, 17);
 		finishDate.add(Calendar.HOUR_OF_DAY, 1);
 		assertEquals(1, trainingDao.findAll().size());
-		assertEquals(6, reserveDao.findAll().size());
 		trainingDao.createTraining(startDate, finishDate, courtDao.findOne(1), userDao.findOne(1));
 		assertEquals(2, trainingDao.findAll().size());
-		assertEquals(9, reserveDao.findAll().size());
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 3);
 		assertEquals(1, trainingDao.findTrainingsByStartDate(date).size());
@@ -79,33 +70,13 @@ public class TrainingDaoITest {
 	}
 	
 	@Test
-	public void t5_addUserMoreFourTraining() {
-		Calendar date = createDate();
-		date.add(Calendar.DAY_OF_YEAR, 3);
-		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
-		assertEquals(1, training.getPlayers().size());
-		boolean isValid = trainingDao.addUserInTraining(userDao.findOne(3), training);
-		assertEquals(true, isValid);
-		isValid = trainingDao.addUserInTraining(userDao.findOne(3), training);
-		assertEquals(false, isValid);
-		isValid = trainingDao.addUserInTraining(userDao.findOne(4), training);
-		assertEquals(true, isValid);
-		isValid = trainingDao.addUserInTraining(userDao.findOne(5), training);
-		assertEquals(true, isValid);
-		isValid = trainingDao.addUserInTraining(userDao.findOne(6), training);
-		assertEquals(false, isValid);
-		assertEquals(4, training.getPlayers().size());
-	}
-	
-	@Test
 	public void t6_deleteUserTraining() {
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 3);
 		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
-		assertEquals(4, training.getPlayers().size());
-		trainingDao.deleteUserInTraining(userDao.findOne(3), training);
-		trainingDao.deleteUserInTraining(userDao.findOne(4), training);
-		assertEquals(2, training.getPlayers().size());
+		assertEquals(1, training.getPlayers().size());
+		trainingDao.deleteUserInTraining(userDao.findOne(2), training);
+		assertEquals(0, training.getPlayers().size());
 	}
 
 	@Test
