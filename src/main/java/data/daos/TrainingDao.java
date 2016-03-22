@@ -9,5 +9,7 @@ import data.entities.Training;
 
 public interface TrainingDao extends JpaRepository<Training, Integer>, TrainingDaoExtended{
 	
+	Training findTrainingById(int id);
+	
 	List<Training> findTrainingsByStartDate(Calendar startDate);
 }

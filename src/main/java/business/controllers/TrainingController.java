@@ -1,6 +1,7 @@
 package business.controllers;
 
 import java.util.Calendar;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,19 +42,27 @@ public class TrainingController {
         this.courtDao = courtDao;
     }
 	
-	public boolean createTraining(TrainingWrapper trainingwrapper){
-		Court court = courtDao.findOne(trainingwrapper.getCourt().getId());
-		User trainer = userDao.findByUsernameOrEmail(trainingwrapper.getTrainer().getUsername());
-		if (trainingDao.findTrainingsByStartDate(trainingwrapper.getStartDate()).size() == 0){
-			trainingDao.createTraining(trainingwrapper.getStartDate(), trainingwrapper.getFinishDate(), court, trainer);
-			while (trainingwrapper.getStartDate().getTimeInMillis() < trainingwrapper.getFinishDate().getTimeInMillis()){
-				Reserve reserve = reserveDao.findByCourtAndDate(court, trainingwrapper.getStartDate());
+	public Training findTrainingById(int id){
+		return trainingDao.findTrainingById(id);
+	}
+	
+	public List<Training> findTrainingsByStartDate(Calendar startDate){
+		return trainingDao.findTrainingsByStartDate(startDate);
+	}
+	
+	public boolean createTraining(TrainingWrapper trainingWrapper){
+		Court court = courtDao.findOne(trainingWrapper.getCourt().getId());
+		User trainer = userDao.findByUsernameOrEmail(trainingWrapper.getTrainer().getUsername());
+		if (trainingDao.findTrainingsByStartDate(trainingWrapper.getStartDate()).size() == 0){
+			trainingDao.createTraining(trainingWrapper.getStartDate(), trainingWrapper.getFinishDate(), court, trainer);
+			while (trainingWrapper.getStartDate().getTimeInMillis() < trainingWrapper.getFinishDate().getTimeInMillis()){
+				Reserve reserve = reserveDao.findByCourtAndDate(court, trainingWrapper.getStartDate());
 				//If reserve exist, delete current, and add new
 				if (reserve != null){
 					reserveDao.delete(reserve);
 				}
-				reserveController.reserveCourt(court.getId(), trainingwrapper.getStartDate(), trainer.getUsername());
-				trainingwrapper.getStartDate().add(Calendar.DAY_OF_MONTH, 7);			
+				reserveController.reserveCourt(court.getId(), trainingWrapper.getStartDate(), trainer.getUsername());
+				trainingWrapper.getStartDate().add(Calendar.DAY_OF_MONTH, 7);			
 			}
 			return true;
 		}
@@ -62,8 +71,7 @@ public class TrainingController {
 		}
 	}
 	
-	public boolean addUserInTraining(TrainingWrapper trainingwrapper, User user){
-		Training training = trainingDao.findTrainingsByStartDate(trainingwrapper.getStartDate()).get(0);
+	public boolean addUserInTraining(Training training, User user){
 		if (training != null && training.getPlayers().size() < 4 && !training.getPlayers().contains(user)){
 			trainingDao.addUserInTraining(user, training);
 			return true;
@@ -71,8 +79,7 @@ public class TrainingController {
 		return false;
 	}
 	
-	public boolean deleteUserInTraining(TrainingWrapper trainingwrapper, User user){
-		Training training = trainingDao.findTrainingsByStartDate(trainingwrapper.getStartDate()).get(0);
+	public boolean deleteUserInTraining(Training training, User user){
 		if (training != null && training.getPlayers().contains(user)){
 			trainingDao.deleteUserInTraining(user, training);
 			return true;
@@ -80,8 +87,7 @@ public class TrainingController {
 		return false;
 	}
 	
-	public boolean deleteTraining(TrainingWrapper trainingwrapper){
-		Training training = trainingDao.findTrainingsByStartDate(trainingwrapper.getStartDate()).get(0);
+	public boolean deleteTraining(Training training){
 		Calendar startDate = training.getStartDate();
 		Calendar finishDate = training.getFinishDate();
 		Court court = training.getCourt();
