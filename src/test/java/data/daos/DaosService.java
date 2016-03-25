@@ -16,7 +16,6 @@ import data.entities.Court;
 import data.entities.Reserve;
 import data.entities.Role;
 import data.entities.Token;
-import data.entities.Training;
 import data.entities.User;
 import data.services.DataService;
 
@@ -60,26 +59,19 @@ public class DaosService {
             map.put(user.getUsername(), user);
         }
         this.createCourts(1, 4);
-        Calendar date = Calendar.getInstance();
-        date.add(Calendar.DAY_OF_YEAR, 1);
-        date.set(Calendar.HOUR_OF_DAY, 9);
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-        Calendar dateFinish = Calendar.getInstance();
-        dateFinish.add(Calendar.DAY_OF_YEAR, 1);
-        dateFinish.set(Calendar.HOUR_OF_DAY, 10);
-        dateFinish.set(Calendar.MINUTE, 0);
-        dateFinish.set(Calendar.SECOND, 0);
-        dateFinish.set(Calendar.MILLISECOND, 0);
-        dateFinish.add(Calendar.DAY_OF_MONTH, 7);
+        Calendar date = createDate();
         for (int i = 0; i < 4; i++) {
         	date.add(Calendar.HOUR_OF_DAY, 1);
             reserveDao.save(new Reserve(courtDao.findOne(i+1), users[i], date));
-            dateFinish.add(Calendar.HOUR_OF_DAY, 1);
-            trainingDao.save(new Training(date, dateFinish, courtDao.findOne(i+1),users[i]));
         }
         
+        //Create one training
+        Calendar dateStart = createDate();
+        dateStart.add(Calendar.DAY_OF_YEAR, 1);
+        Calendar dateFinish = createDate();
+        dateFinish.add(Calendar.HOUR_OF_DAY, 1);
+        dateFinish.add(Calendar.DAY_OF_YEAR, 8);
+        trainingDao.createTraining(dateStart, dateFinish, courtDao.findOne(1),users[0]);
         
         //Create users with token not valid
         users = this.createPlayers(8, 4);
@@ -90,6 +82,16 @@ public class DaosService {
         	map.put("t" + token.getUser().getUsername(), token);
       	}
     }
+    
+    private Calendar createDate(){
+		Calendar date = Calendar.getInstance();
+		date.add(Calendar.DAY_OF_YEAR, 1);
+        date.set(Calendar.HOUR_OF_DAY, 9);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date;
+	}
 
     public User[] createPlayers(int initial, int size) {
         User[] users = new User[size];

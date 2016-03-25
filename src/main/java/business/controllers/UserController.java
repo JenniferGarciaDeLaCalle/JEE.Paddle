@@ -26,6 +26,10 @@ public class UserController {
     public void setAuthorizationDao(AuthorizationDao authorizationDao) {
         this.authorizationDao = authorizationDao;
     }
+    
+    public User findById(int id){
+    	return this.userDao.findById(id);
+    }
 
     public boolean registration(UserWrapper userWrapper) {
         if (null == userDao.findByUsernameOrEmail(userWrapper.getUsername())
@@ -37,5 +41,9 @@ public class UserController {
         } else {
             return false;
         }
+    }
+    
+    public boolean exist(int userId) {
+        return userDao.findOne(userId) != null;
     }
 }

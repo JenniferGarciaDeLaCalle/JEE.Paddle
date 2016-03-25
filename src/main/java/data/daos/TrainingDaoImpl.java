@@ -1,7 +1,10 @@
 package data.daos;
 
+import java.util.Calendar;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import data.entities.Court;
 import data.entities.Training;
 import data.entities.User;
 
@@ -11,29 +14,26 @@ public class TrainingDaoImpl implements TrainingDaoExtended {
 	private TrainingDao trainingDao;
 	
 	@Override
-	public boolean addUserInTraining(User user, Training training) {
-		if (training.getPlayers().size() < 4){
-			training.getPlayers().add(user);
-			trainingDao.save(training);
-			return true;
-		}
-		return false;
+	public void createTraining(Calendar startDate, Calendar finishDate, Court court, User trainer) {
+		trainingDao.save(new Training (startDate, finishDate, court, trainer));
+	}
+	
+	@Override
+	public void addUserInTraining(User user, Training training) {
+		training.getPlayers().add(user);
+		trainingDao.save(training);
 	}
 
 	@Override
-	public boolean deleteUserInTraining(User user, Training training) {
-		if (training.getPlayers().contains(user)){
-			training.getPlayers().remove(user);
-			trainingDao.save(training);
-			return true;
-		}
-		return false;
+	public void deleteUserInTraining(User user, Training training) {
+		training.getPlayers().remove(user);
+		trainingDao.save(training);
 	}
 
 	@Override
-	public boolean deleteTraining(Training training) {
+	public void deleteTraining(Training training) {
 		trainingDao.delete(training);
-		return false;
 	}
+
 }
 

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class UserDaoITest {
 
     @Autowired
     private UserDao userDao;
+    
+    @Autowired
+    private TokenDao tokenDao;
 
     @Autowired
     private DaosService daosService;
@@ -44,5 +49,24 @@ public class UserDaoITest {
         Token t1 = (Token) daosService.getMap().get("tu1");
         assertEquals(u1, userDao.findByTokenValue(t1.getValue()));
         assertNull(userDao.findByTokenValue("kk"));
+    }
+    
+    @Test
+    public void testFindByTokenValueIsValid() {
+        User u1 = (User) daosService.getMap().get("u1");
+        Token t1 = (Token) daosService.getMap().get("tu1");
+        assertEquals(u1, userDao.findByTokenValueIsValid(t1.getValue()));
+        assertNull(userDao.findByTokenValueIsValid("kk"));
+    }
+    
+    @Test
+    public void testFindByTokenValueNotValid() {
+        User u1 = (User) daosService.getMap().get("u4");
+        Token t1 =  new Token(u1);
+        Calendar calendar = Calendar.getInstance();
+       	calendar.set(2016, Calendar.MARCH, 20);
+        t1.setCreateTime(calendar);
+        tokenDao.save(t1);
+        assertNull(userDao.findByTokenValueIsValid(t1.getValue()));
     }
 }
