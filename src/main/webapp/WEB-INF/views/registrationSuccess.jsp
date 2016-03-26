@@ -3,8 +3,10 @@
 
 <jsp:include page="head.jsp" />
 
-	<H1>Home</H1>
-	<p><a href="<c:url value='/courtList'/>">Courts</a></p>
-	<p><a href="<c:url value='/userList'/>">Users</a></p>
+	<H1>Create success</H1>
+
+	<h3>The element (${element}) is create</h3>
+	
+	 <p><a href="<c:url value='/home' />">Return HOME</a></p>
 
 <jsp:include page="footer.jsp" />
