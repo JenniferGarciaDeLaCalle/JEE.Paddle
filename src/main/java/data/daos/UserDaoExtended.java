@@ -4,6 +4,6 @@ import data.entities.User;
 
 public interface UserDaoExtended {
 
-	public User findByTokenValueIsValid(String usernameOrEmailOrTokenValue);
+	public User findByTokenValueIsValid(String tokenValue);
 	
 }
