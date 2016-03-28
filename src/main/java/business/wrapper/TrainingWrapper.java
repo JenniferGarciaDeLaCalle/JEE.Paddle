@@ -2,8 +2,7 @@ package business.wrapper;
 
 import java.util.Calendar;
 
-import data.entities.Court;
-import data.entities.User;
+import data.entities.Training;
 
 public class TrainingWrapper {
 
@@ -11,18 +10,22 @@ public class TrainingWrapper {
 	
 	private Calendar finishDate;
 	
-    private Court court;
+    private int courtId;
     
-	private User trainer;
+	private int trainerId;
 
     public TrainingWrapper() {
     }
 
-    public TrainingWrapper(Calendar startDate, Calendar finishDate, Court court, User trainer) {
+    public TrainingWrapper(Calendar startDate, Calendar finishDate, int courtId, int trainerId) {
         this.startDate = startDate;
         this.finishDate = finishDate;
-        this.court = court;
-        this.trainer = trainer;
+        this.courtId = courtId;
+        this.trainerId = trainerId;
+    }
+    
+    public TrainingWrapper(Training training) {
+        this(training.getStartDate(), training.getFinishDate(), training.getCourt().getId(), training.getTrainer().getId());
     }
 
 	public Calendar getStartDate() {
@@ -41,26 +44,26 @@ public class TrainingWrapper {
 		this.finishDate = finishDate;
 	}
 
-	public Court getCourt() {
-		return court;
+	public int getCourtId() {
+		return courtId;
 	}
 
-	public void setCourt(Court court) {
-		this.court = court;
+	public void setCourtId(int courtId) {
+		this.courtId = courtId;
 	}
 
-	public User getTrainer() {
-		return trainer;
+	public int getTrainerId() {
+		return trainerId;
 	}
 
-	public void setTrainer(User trainer) {
-		this.trainer = trainer;
+	public void setTrainerId(int trainerId) {
+		this.trainerId = trainerId;
 	}
 
 	@Override
 	public String toString() {
-		return "TrainingWrapper [startDate=" + startDate + ", finishDate=" + finishDate + ", court=" + court
-				+ ", trainer=" + trainer + "]";
+		return "TrainingWrapper [startDate=" + startDate + ", finishDate=" + finishDate + ", courtId=" + courtId
+				+ ", trainerId=" + trainerId + "]";
 	}
 	
 }

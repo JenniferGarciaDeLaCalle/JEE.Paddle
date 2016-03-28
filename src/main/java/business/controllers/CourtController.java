@@ -51,5 +51,9 @@ public class CourtController {
     public boolean exist(int courtId) {
         return courtDao.findOne(courtId) != null;
     }
+    
+    public Court court(int courtId) {
+        return courtDao.findOne(courtId);
+    }
 
 }

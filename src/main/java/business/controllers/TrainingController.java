@@ -1,9 +1,11 @@
 package business.controllers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import business.wrapper.TrainingWrapper;
 import data.daos.CourtDao;
@@ -15,6 +17,7 @@ import data.entities.Reserve;
 import data.entities.Training;
 import data.entities.User;
 
+@Controller
 public class TrainingController {
 
 	private TrainingDao trainingDao;
@@ -42,6 +45,16 @@ public class TrainingController {
         this.courtDao = courtDao;
     }
 	
+	@Autowired
+    public void setReserveDao(ReserveDao reserveDao) {
+        this.reserveDao = reserveDao;
+    }
+	
+	@Autowired
+    public void setReserveController(ReserveController reserveController) {
+        this.reserveController = reserveController;
+    }
+	
 	public Training findTrainingById(int id){
 		return trainingDao.findTrainingById(id);
 	}
@@ -51,8 +64,8 @@ public class TrainingController {
 	}
 	
 	public boolean createTraining(TrainingWrapper trainingWrapper){
-		Court court = courtDao.findOne(trainingWrapper.getCourt().getId());
-		User trainer = userDao.findByUsernameOrEmail(trainingWrapper.getTrainer().getUsername());
+		Court court = courtDao.findOne(trainingWrapper.getCourtId());
+		User trainer = userDao.findById(trainingWrapper.getTrainerId());
 		if (trainingDao.findTrainingsByStartDate(trainingWrapper.getStartDate()).size() == 0){
 			trainingDao.createTraining(trainingWrapper.getStartDate(), trainingWrapper.getFinishDate(), court, trainer);
 			while (trainingWrapper.getStartDate().getTimeInMillis() < trainingWrapper.getFinishDate().getTimeInMillis()){
@@ -101,4 +114,12 @@ public class TrainingController {
 		trainingDao.deleteTraining(training);
 		return true;
 	}
+	
+	public List<TrainingWrapper> showTrainings() {
+        List<TrainingWrapper> trainingList = new ArrayList<>();
+        for (Training training : trainingDao.findAll()) {
+        	trainingList.add(new TrainingWrapper(training));
+        }
+        return trainingList;
+    }
 }

@@ -43,6 +43,7 @@ public class Populate {
         adminEmail = environment.getProperty("admin.email");
         adminPassword = environment.getProperty("admin.password");
         createDefaultAdmin();
+        createDefaultTrainer();
     }
 
     public void createDefaultAdmin() {
@@ -51,6 +52,15 @@ public class Populate {
             User admin = new User(adminUsername, adminEmail, adminPassword, new GregorianCalendar(1979, 07, 22));
             userDao.save(admin);
             authorizationDao.save(new Authorization(admin, Role.ADMIN));
+        }
+    }
+
+    public void createDefaultTrainer() {
+        User trainerSaved = userDao.findByUsernameOrEmail("trainer");
+        if (trainerSaved == null) {
+            User trainer = new User("trainer", "trainer@gmail.com", "trainer", new GregorianCalendar(1980, 07, 22));
+            userDao.save(trainer);
+            authorizationDao.save(new Authorization(trainer, Role.TRAINER));
         }
     }
 

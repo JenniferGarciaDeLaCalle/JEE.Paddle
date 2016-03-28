@@ -6,7 +6,15 @@ public class Uris {
 
     public static final String ID = "/{id}";
     
+    public static final String TRAINING_ID = "/{trainerId}";
+    
+    public static final String USER_ID = "/{userId}";
+    
     public static final String ADMINS = "/admins";
+    
+    public static final String TRAINERS = "/trainers";
+    
+    public static final String PLAYERS = "/players";
     
     public static final String USERS = "/users";
 
