@@ -43,6 +43,7 @@ public class DataService {
         trainingDao.deleteAll();
         userDao.deleteAll();
         populate.createDefaultAdmin();
+        populate.createDefaultTrainer();
     }
 
 }

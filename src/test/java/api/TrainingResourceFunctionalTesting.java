@@ -7,31 +7,19 @@ import java.util.Calendar;
 
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
 import business.api.Uris;
-import business.controllers.UserController;
-import business.wrapper.AvailableTime;
 import business.wrapper.TrainingWrapper;
-import business.wrapper.UserWrapper;
-import business.wrapper.UserWrapperBuilder;
-import data.daos.TrainingDao;
-import data.entities.User;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TrainingResourceFunctionalTesting {
 
 	RestService restService = new RestService();
-	
-	
-//    @Autowired
-//    private TrainingDao trainingDao;
 
 	@Test
 	public void t1_testCreateTraining() {
@@ -133,7 +121,12 @@ public class TrainingResourceFunctionalTesting {
             LogManager.getLogger(this.getClass())
                     .info("testDeleteTrainingUnauthorized (" + httpError.getMessage() + "):\n    " + httpError.getResponseBodyAsString());
         }
-    } 
+    }
+	
+	@Test
+    public void tB_restaurar() {
+		new RestService().deleteAll();
+	}
 	
 	private Calendar createDate(){
 		Calendar date = Calendar.getInstance();

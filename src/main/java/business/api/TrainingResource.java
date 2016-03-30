@@ -64,6 +64,9 @@ public class TrainingResource {
 		if(!courtController.exist(trainingWrapper.getCourtId())){
 			throw new NotFoundCourtIdException();
 		}
+		if(!userController.exist(trainingWrapper.getTrainerId())){
+			throw new NotFoundUserIdException();
+		}
 		if (!trainingController.createTraining(trainingWrapper)) {
 			throw new ApiException("Error al crear el entrenamiento", 1);
 	  	}

@@ -24,6 +24,12 @@ public class TrainingWrapper {
         this.trainerId = trainerId;
     }
     
+    public TrainingWrapper(Calendar startDate, Calendar finishDate, int courtId) {
+        this.startDate = startDate;
+        this.finishDate = finishDate;
+        this.courtId = courtId;
+    }
+    
     public TrainingWrapper(Training training) {
         this(training.getStartDate(), training.getFinishDate(), training.getCourt().getId(), training.getTrainer().getId());
     }
