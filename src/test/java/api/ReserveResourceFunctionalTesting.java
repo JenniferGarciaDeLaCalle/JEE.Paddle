@@ -45,7 +45,7 @@ public class ReserveResourceFunctionalTesting {
 
     @After
     public void deleteAll() {
-        new RestService().deleteAll();
+    	restService.deleteAll();
     }
 
 }

@@ -6,11 +6,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	TrainingResourceFunctionalTesting.class,
     UserResourceFunctionalTesting.class, 
     TokenResourceFunctionalTesting.class, 
     CourtResourceFunctionalTesting.class,
-    ReserveResourceFunctionalTesting.class
+    ReserveResourceFunctionalTesting.class,
+    TrainingResourceFunctionalTesting.class
 })
 public class AllFunctionalTesting {
 

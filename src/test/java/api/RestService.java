@@ -46,9 +46,9 @@ public class RestService {
         new RestBuilder<Object>(URL).path(Uris.COURTS).param("id", id).basicAuth(this.loginAdmin(), "").post().build();
     }
     
-    public void createTraining(Calendar startDate, Calendar finishDate, int courtId, int trainerId) {
-        TrainingWrapper trainingWrapper = new TrainingWrapper(startDate, finishDate, courtId, trainerId);
-        new RestBuilder<Object>(RestService.URL).path(Uris.TRAININGS).path(Uris.TRAINERS).basicAuth(this.loginTrainer(), "").body(trainingWrapper)
+    public void createTraining(Calendar startDate, Calendar finishDate, int courtId) {
+        TrainingWrapper trainingWrapper = new TrainingWrapper(startDate, finishDate, courtId);
+        new RestBuilder<String>(RestService.URL).path(Uris.TRAININGS).path(Uris.TRAINERS).basicAuth(this.loginTrainer(), "").body(trainingWrapper)
         		.post().build();
     }
 

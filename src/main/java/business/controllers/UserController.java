@@ -57,4 +57,8 @@ public class UserController {
     public boolean exist(int userId) {
         return userDao.findOne(userId) != null;
     }
+    
+    public User findByUsernameOrEmail(String usernameOrEmail) {
+        return userDao.findByUsernameOrEmail(usernameOrEmail);
+    }
 }

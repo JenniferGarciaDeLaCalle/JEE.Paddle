@@ -1,10 +1,14 @@
 package business.wrapper;
 
 import java.util.Calendar;
+import java.util.List;
 
 import data.entities.Training;
+import data.entities.User;
 
 public class TrainingWrapper {
+	
+	private int id;
 
 	private Calendar startDate;
 	
@@ -13,8 +17,19 @@ public class TrainingWrapper {
     private int courtId;
     
 	private int trainerId;
+	
+	private List<User> players;
 
     public TrainingWrapper() {
+    }
+    
+    public TrainingWrapper(int id, Calendar startDate, Calendar finishDate, int courtId, int trainerId, List<User> players) {
+    	this.id = id;
+        this.startDate = startDate;
+        this.finishDate = finishDate;
+        this.courtId = courtId;
+        this.trainerId = trainerId;
+        this.players = players;
     }
 
     public TrainingWrapper(Calendar startDate, Calendar finishDate, int courtId, int trainerId) {
@@ -31,8 +46,16 @@ public class TrainingWrapper {
     }
     
     public TrainingWrapper(Training training) {
-        this(training.getStartDate(), training.getFinishDate(), training.getCourt().getId(), training.getTrainer().getId());
+        this(training.getId(), training.getStartDate(), training.getFinishDate(), training.getCourt().getId(), training.getTrainer().getId(), training.getPlayers());
     }
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public Calendar getStartDate() {
 		return startDate;
@@ -66,10 +89,18 @@ public class TrainingWrapper {
 		this.trainerId = trainerId;
 	}
 
+	public List<User> getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(List<User> players) {
+		this.players = players;
+	}
+
 	@Override
 	public String toString() {
-		return "TrainingWrapper [startDate=" + startDate + ", finishDate=" + finishDate + ", courtId=" + courtId
-				+ ", trainerId=" + trainerId + "]";
+		return "TrainingWrapper [id=" + id + ", startDate=" + startDate + ", finishDate=" + finishDate + ", courtId="
+				+ courtId + ", trainerId=" + trainerId + ", players=" + players + "]";
 	}
 	
 }

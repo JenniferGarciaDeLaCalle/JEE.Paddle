@@ -3,6 +3,8 @@ package business.api;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,6 @@ import business.controllers.TrainingController;
 import business.controllers.UserController;
 import business.wrapper.TrainingWrapper;
 import data.entities.Training;
-import data.entities.User;
 
 @RestController
 @RequestMapping(Uris.SERVLET_MAP + Uris.TRAININGS)
@@ -53,7 +54,7 @@ public class TrainingResource {
 	}
 	
 	@RequestMapping(value = Uris.TRAINERS, method = RequestMethod.POST)
-	public void createTraining(@RequestBody TrainingWrapper trainingWrapper)
+	public void createTraining(@AuthenticationPrincipal User activeUser, @RequestBody TrainingWrapper trainingWrapper)
 			throws InvalidDateException, AlreadyExistTrainingFieldException, NotFoundCourtIdException, ApiException{
 		if(trainingWrapper.getStartDate().getTimeInMillis() > trainingWrapper.getFinishDate().getTimeInMillis()){
 			throw new InvalidDateException();
@@ -64,23 +65,27 @@ public class TrainingResource {
 		if(!courtController.exist(trainingWrapper.getCourtId())){
 			throw new NotFoundCourtIdException();
 		}
-		if(!userController.exist(trainingWrapper.getTrainerId())){
+		data.entities.User user = userController.findByUsernameOrEmail(activeUser.getUsername());
+		if(user == null){
 			throw new NotFoundUserIdException();
 		}
-		if (!trainingController.createTraining(trainingWrapper)) {
-			throw new ApiException("Error al crear el entrenamiento", 1);
-	  	}
+		else {
+			trainingWrapper.setTrainerId(user.getId());
+			if (!trainingController.createTraining(trainingWrapper)) {
+				throw new ApiException("Error al crear el entrenamiento", 1);
+		  	}
+		}
 	}
 	
-	@RequestMapping(value = Uris.PLAYERS + Uris.TRAINING_ID + Uris.USERS + Uris.USER_ID, method = RequestMethod.POST)
-	public void addUserInTraining(@PathVariable int trainerId, @PathVariable int userId) 
+	@RequestMapping(value = Uris.PLAYERS + Uris.TRAINING_ID, method = RequestMethod.POST)
+	public void addUserInTraining(@AuthenticationPrincipal User activeUser, @PathVariable int trainerId) 
 			throws NotFoundUserIdException, NotFoundTrainingIdException, ApiException{
 		Training training = trainingController.findTrainingById(trainerId);
 		if (training == null) {
 			throw new NotFoundTrainingIdException();
 	  	}
-		User user = userController.findById(userId);
-		if (user == null){
+		data.entities.User user = userController.findByUsernameOrEmail(activeUser.getUsername());
+		if(user == null){
 			throw new NotFoundUserIdException();
 		}
 		if (!this.trainingController.addUserInTraining(training, user)) {
@@ -95,7 +100,7 @@ public class TrainingResource {
 		if (training == null) {
 			throw new NotFoundTrainingIdException();
 	  	}
-		User user = userController.findById(userId);
+		data.entities.User user = userController.findById(userId);
 		if (user == null){
 			throw new NotFoundUserIdException();
 		}
