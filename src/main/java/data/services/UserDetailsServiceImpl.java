@@ -31,18 +31,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private AuthorizationDao authorizationDao;
 
     @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        User user = userDao.findByTokenValueIsValid(username);
-        if (user == null) {
-            user = userDao.findByUsernameOrEmail(username);
-            if (user == null) {
-                throw new UsernameNotFoundException("Usuario no encontrado");
-            } else {
-                return this.userBuilder(user.getUsername(), user.getPassword(), Arrays.asList(Role.AUTHENTICATED));
-            }
-        } else {
+    public UserDetails loadUserByUsername(final String usernameOrEmailOrTokenValue) throws UsernameNotFoundException {
+        User user = userDao.findByTokenValueIsValid(usernameOrEmailOrTokenValue);
+        if (user != null) {
             List<Role> roleList = authorizationDao.findRoleByUser(user);
             return this.userBuilder(user.getUsername(), new BCryptPasswordEncoder().encode(""), roleList);
+        } else {
+            user = userDao.findByUsernameOrEmail(usernameOrEmailOrTokenValue);
+            if (user != null) {
+                return this.userBuilder(user.getUsername(), user.getPassword(), Arrays.asList(Role.AUTHENTICATED));
+            } else {
+                throw new UsernameNotFoundException("Usuario no encontrado");
+            }
         }
     }
 
