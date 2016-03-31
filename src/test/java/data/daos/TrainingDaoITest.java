@@ -16,7 +16,6 @@ import config.PersistenceConfig;
 import config.TestsPersistenceConfig;
 import data.entities.Training;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PersistenceConfig.class, TestsPersistenceConfig.class})
 public class TrainingDaoITest {
@@ -31,62 +30,64 @@ public class TrainingDaoITest {
 	private UserDao userDao;
 
 	@Test
-	public void t1_testFindTrainingsByStartDateNotFind(){
+	public void testFindTrainingsByStartDateNotFind(){
 		Calendar date = createDate();
 		assertEquals(0, trainingDao.findTrainingsByStartDate(date).size());
 	}
 	
 	@Test
-	public void t2_testFindTrainingsByStartDateFind(){
+	public void testFindTrainingsByStartDateFind(){
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 1);
 		assertEquals(1, trainingDao.findTrainingsByStartDate(date).size());
 	}
 	
 	@Test
-	public void t3_createTraining() {
+	public void testCreateTraining() {
 		Calendar startDate = createDate();
-		startDate.add(Calendar.DAY_OF_YEAR, 3);
+		startDate.add(Calendar.DAY_OF_YEAR, 2);
 		Calendar finishDate = createDate();
 		finishDate.add(Calendar.DAY_OF_YEAR, 17);
 		finishDate.add(Calendar.HOUR_OF_DAY, 1);
-		assertEquals(1, trainingDao.findAll().size());
+		int numTrainings = trainingDao.findAll().size();
 		trainingDao.createTraining(startDate, finishDate, courtDao.findOne(1), userDao.findOne(1));
-		assertEquals(2, trainingDao.findAll().size());
-		Calendar date = createDate();
-		date.add(Calendar.DAY_OF_YEAR, 3);
-		assertEquals(1, trainingDao.findTrainingsByStartDate(date).size());
+		assertEquals(numTrainings + 1, trainingDao.findAll().size());
+		assertEquals(1, trainingDao.findTrainingsByStartDate(startDate).size());
 	}
 	
 	
 	@Test
-	public void t4_addUserTraining() {
+	public void testAddUserTraining() {
+		createTraining();
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 3);
 		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
-		assertEquals(0, training.getPlayers().size());
+		int numPlayers = training.getPlayers().size();
 		trainingDao.addUserInTraining(userDao.findOne(2), training);
-		assertEquals(1, training.getPlayers().size());
+		assertEquals(numPlayers + 1, training.getPlayers().size());
 	}
 	
 	@Test
-	public void t6_deleteUserTraining() {
+	public void testDeleteUserTraining() {
+		createTraining();
+		addUserTraining();
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 3);
 		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
-		assertEquals(1, training.getPlayers().size());
+		int numPlayers = training.getPlayers().size();
 		trainingDao.deleteUserInTraining(userDao.findOne(2), training);
-		assertEquals(0, training.getPlayers().size());
+		assertEquals(numPlayers - 1, training.getPlayers().size());
 	}
 
 	@Test
-	public void t7_testDeleteTraining() {
+	public void testDeleteTraining() {
+		createTraining();
 		Calendar date = createDate();
 		date.add(Calendar.DAY_OF_YEAR, 3);
 		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
-		assertEquals(2, trainingDao.findAll().size());
+		int numTraining = trainingDao.findAll().size();
 		trainingDao.deleteTraining(training);
-		assertEquals(1, trainingDao.findAll().size());
+		assertEquals(numTraining - 1, trainingDao.findAll().size());
 	}
 	
 	private Calendar createDate(){
@@ -97,5 +98,23 @@ public class TrainingDaoITest {
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
         return date;
+	}
+	
+	private void createTraining(){
+		Calendar startDate = createDate();
+		startDate.add(Calendar.DAY_OF_YEAR, 3);
+		Calendar finishDate = createDate();
+		finishDate.add(Calendar.DAY_OF_YEAR, 17);
+		finishDate.add(Calendar.HOUR_OF_DAY, 1);
+		trainingDao.createTraining(startDate, finishDate, courtDao.findOne(1), userDao.findOne(1));
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+	}
+	
+	private void addUserTraining(){
+		Calendar date = createDate();
+		date.add(Calendar.DAY_OF_YEAR, 3);
+		Training training = trainingDao.findTrainingsByStartDate(date).get(0);
+		trainingDao.addUserInTraining(userDao.findOne(2), training);
 	}
 }
