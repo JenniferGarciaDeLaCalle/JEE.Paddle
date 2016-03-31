@@ -6,5 +6,6 @@
 	<H1>Home</H1>
 	<p><a href="<c:url value='/courtList'/>">Courts</a></p>
 	<p><a href="<c:url value='/userList'/>">Users</a></p>
+	<p><a href="<c:url value='/trainingList'/>">Trainings</a></p>
 
 <jsp:include page="footer.jsp" />

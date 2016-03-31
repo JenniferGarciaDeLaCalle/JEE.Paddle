@@ -1,6 +1,5 @@
 package data.entities;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.persistence.Column;
@@ -100,8 +99,8 @@ public class User {
 
     @Override
     public String toString() {
-        String date = new SimpleDateFormat("dd-MMM-yyyy ").format(birthDate.getTime());
-        return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password + ", birthDate=" + date
+        //String date = new SimpleDateFormat("dd-MMM-yyyy ").format(birthDate.getTime());
+        return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password + ", birthDate=" + birthDate
                 + ", active=" + active + "]";
     }
 
